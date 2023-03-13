@@ -6,16 +6,11 @@
           <img src="@/assets/images/yksg.svg" alt="" class="logo-img" />
           <p class="logo-name">One Time</p>
         </div>
-        <p class="top-p">
-          一刻时光是一款为便于与用户交流的留言平台。
-        </p>
-        <p class="top-p">
-          用户将留言便签贴在留言墙上，用户可以自定义便签颜色和内容属性，不仅可以用于交流，也是一场记录。
-        </p>
+        <p class="top-p">一刻时光是一款为便于与用户交流的留言平台。</p>
+        <p class="top-p">用户将留言便签贴在留言墙上，用户可以自定义便签颜色和内容属性，不仅可以用于交流，也是一场记录。</p>
         <p class="state">
           <span>声明</span>
-          <span>备案/许可证AICP备12345678号</span
-          ><span>网站备案/许可证AICP备</span>
+          <span>备案/许可证AICP备12345678号</span><span>网站备案/许可证AICP备</span>
         </p>
       </div>
       <div class="link">

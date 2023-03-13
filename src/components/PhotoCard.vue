@@ -16,7 +16,7 @@ export default {
       default: {},
     },
   },
-  methods:{
+  methods: {
     toDetail() {
       this.$emit("toDetail");
     },
@@ -36,25 +36,24 @@ export default {
         });
       }
     },
-    
   },
   //监听计算属性
-   computed: {
-    card(){
+  computed: {
+    card() {
       return this.photo;
-    }
-   },
-   created(){
+    },
+  },
+  created() {
     // console.log(this.card)
-   }
+  },
 };
 </script>
 <template>
-  <div class="yk-photo-card" >
+  <div class="yk-photo-card">
     <img :src="baseUrl + photo.imgurl" alt="" class="photo-img" />
     <div class="photo-bg" @click="toDetail"></div>
     <div class="photo-like" @click="clickLike">
-      <span class="iconfont icon-aixin1" :class="{ islike: card.islike[0].count > 0 }" ></span>
+      <span class="iconfont icon-aixin1" :class="{ islike: card.islike[0].count > 0 }"></span>
       <span class="like-data">{{ photo.like[0].count }}</span>
     </div>
   </div>
@@ -108,6 +107,5 @@ export default {
       opacity: 1;
     }
   }
-
 }
 </style>

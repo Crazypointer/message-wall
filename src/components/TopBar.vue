@@ -28,20 +28,8 @@ export default {
       <p class="logo-name">One Time</p>
     </div>
     <div class="menu">
-      <YkButton
-        size="base"
-        :normal="id == 0 ? 'cprimary' : 'csecondary'"
-        class="menu-message"
-        @click="changeWall(0)"
-        >留言墙</YkButton
-      >
-      <YkButton
-        size="base"
-        :normal="id == 1 ? 'cprimary' : 'csecondary'"
-        class="menu-photo"
-        @click="changeWall(1)"
-        >照片墙</YkButton
-      >
+      <YkButton size="base" :normal="id == 0 ? 'cprimary' : 'csecondary'" class="menu-message" @click="changeWall(0)">留言墙</YkButton>
+      <YkButton size="base" :normal="id == 1 ? 'cprimary' : 'csecondary'" class="menu-photo" @click="changeWall(1)">照片墙</YkButton>
     </div>
     <div class="user">
       <div class="user-head"></div>

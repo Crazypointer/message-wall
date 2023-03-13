@@ -4,30 +4,39 @@
     <p class="title">{{ wallType[id].name }}</p>
     <p class="slogan">{{ wallType[id].slogan }}</p>
     <div class="label">
-      <p class="label-list" :class="{ lbselected: nlabel == -1 }" @click="selectNode(-1)">
-        全部
-      </p>
+      <p class="label-list" :class="{ lbselected: nlabel == -1 }" @click="selectNode(-1)">全部</p>
       <p class="label-list" v-for="(e, index) in label[id]" :key="index" :class="{ lbselected: nlabel == index }" @click="selectNode(index)">
         {{ e }}
       </p>
     </div>
     <div class="card" :style="{ width: nWidth + 'px' }" v-show="id == 0">
       <!-- 这是主页面显示的每张卡片的组件 -->
-      <NoteCard v-for="(info, index) in cards" :key="index" :note="info" :width="'288px'" class="card-inner" :class="{ cardselected: index == cardSelected }" @toDetail="selectCard(index)" v-show="id == 0"></NoteCard>
+      <NoteCard
+        v-for="(info, index) in cards"
+        :key="index"
+        :note="info"
+        :width="'288px'"
+        class="card-inner"
+        :class="{ cardselected: index == cardSelected }"
+        @toDetail="selectCard(index)"
+        v-show="id == 0"
+      ></NoteCard>
     </div>
     <!-- 照片墙的组件 -->
     <div class="photo" v-show="id == 1">
       <!-- selectCard -->
-      <PhotoCard class="photo-card" v-for="(img, index) in cards" :key="index" :photo="img" @toDetail="selectCard(index)" v-show="id == 1"></PhotoCard>
+      <PhotoCard
+        class="photo-card"
+        v-for="(img, index) in cards"
+        :key="index"
+        :photo="img"
+        @toDetail="selectCard(index)"
+        v-show="id == 1"
+      ></PhotoCard>
     </div>
     <!-- 图片预览 -->
     <!-- bug cardSelected始终为-1 -->
-    <YkViewer
-      :isView="view"
-      :photos="cards"
-      :nowNumber="cardSelected"
-      @viewSwitch="viewSwitch"
-    ></YkViewer>
+    <YkViewer :isView="view" :photos="cards" :nowNumber="cardSelected" @viewSwitch="viewSwitch"></YkViewer>
 
     <!-- 卡片状态 -->
     <div class="none-msg" v-if="isLoading == 0">
@@ -50,7 +59,7 @@
     <YkModal :title="title" @close="closeModal" :isModal="modal">
       <!-- 父组件传递id给子组件 -->
       <!-- 父组件通过子组件传递回来的addClose事件来控制关闭，通过clickbt事件来唤出新建留言卡片的页面 -->
-      <NewCard :id="id" @addClose="closeModal" @clickbt="newCard" v-if="cardSelected == -1" ></NewCard>
+      <NewCard :id="id" @addClose="closeModal" @clickbt="newCard" v-if="cardSelected == -1"></NewCard>
 
       <!-- 当前留言卡片的属性组件 当用户点击的是主页的留言时会弹出该卡片 -->
       <!-- 查看留言对应的弹出界面 -->
@@ -110,16 +119,15 @@ export default {
     },
   },
   watch: {
-    // newName, oldName 两个值 
+    // newName, oldName 两个值
     id() {
       //路由跳转，全部设置为默认值
-      this.modal = false;  //关闭详情弹窗
-      this.view = false;  //关闭图片预览
+      this.modal = false; //关闭详情弹窗
+      this.view = false; //关闭图片预览
       this.nlabel = -1; //选择的标签变为默认的-1
       this.cardSelected = -1; //标签变为未选中的状态
       this.getUser();
       this.getWallCard(this.id);
-
     },
   },
   methods: {
@@ -136,8 +144,7 @@ export default {
       this.nWidth = Math.floor((wWidth - 120) / 300) * 300;
     },
     scrollBottom() {
-      let scrollTop =
-        document.documentElement.scrollTop || document.body.scrollTo;
+      let scrollTop = document.documentElement.scrollTop || document.body.scrollTo;
       let clientHeight = document.documentElement.clientHeight;
       let scrollHeight = document.documentElement.scrollHeight;
       if (scrollTop + clientHeight + 230 >= scrollHeight) {
@@ -171,22 +178,22 @@ export default {
     selectCard(index) {
       this.title = "";
       if (this.cardSelected != index) {
-        this.cardSelected = index; 
+        this.cardSelected = index;
         this.modal = true;
-        if(this.id == 1){
+        if (this.id == 1) {
           this.view = true;
         }
       } else {
         this.cardSelected = -1;
         this.modal = false;
-        if(this.id == 1){
+        if (this.id == 1) {
           this.view = false;
         }
       }
     },
     //切换图片
     viewSwitch(e) {
-      console.log("点击了切换图片")
+      console.log("点击了切换图片");
       //0 向左， 1向右
       if (e == 0) {
         this.cardSelected--;

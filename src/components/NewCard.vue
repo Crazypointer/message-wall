@@ -13,13 +13,7 @@
     </div>
     <!-- 新建照片卡片 -->
     <div class="add-photo" v-if="id == 1">
-      <input
-        type="file"
-        name="file"
-        id="file"
-        multiple="multiple"
-        @change="showPhoto"
-      />
+      <input type="file" name="file" id="file" multiple="multiple" @change="showPhoto" />
       <div class="add-bt" v-if="url == ''">
         <span class="iconfont icon-tianjia"></span>
       </div>
@@ -31,16 +25,8 @@
       </div>
     </div>
     <!-- 新建便签卡片 -->
-    <div
-      class="card-main"
-      :style="{ background: id == 0 ? cardColor[colorSelected] : cardColor[5] }"
-    >
-      <textarea
-        placeholder="留言..."
-        class="message"
-        maxlength="96"
-        v-model="message"
-      ></textarea>
+    <div class="card-main" :style="{ background: id == 0 ? cardColor[colorSelected] : cardColor[5] }">
+      <textarea placeholder="留言..." class="message" maxlength="96" v-model="message"></textarea>
       <input type="text" placeholder="签名" class="name" v-model="name" />
     </div>
     <div class="labels">
@@ -73,9 +59,7 @@
       </p>
     </div>
     <div class="footbt">
-      <YkButton size="max" normal="secondary" @click="closeModal(0)"
-        >丢弃</YkButton
-      >
+      <YkButton size="max" normal="secondary" @click="closeModal(0)">丢弃</YkButton>
       <YkButton size="max" class="submit" @click="submit()">确认</YkButton>
     </div>
   </div>
@@ -179,26 +163,26 @@ export default {
           // 数据存数据库
           data.imgurl = res;
           insertWallApi(data).then((result) => {
-          let cardD = {
-            type: this.id, //0为留言墙 1为照片墙
-            message: this.message, // 新建留言卡片的时候输入的内容
-            name: data.name, //新建卡片时的昵称
-            userId: this.user.id, //访问用户的ip
-            moment: new Date(), //新建时刻
-            label: this.labelSelected, //所选择的留言所属标签
-            color: 5, //卡片颜色
-            imgurl: res,
-            id: result.message.insertId,
-            islike: [{ count: 0 }],
-            like: [{ count: 0 }],
-            comcount: [{ count: 0 }],
-            report: [{ count: 0 }],
-            dismiss: [{ count: 0 }],
-          };
-          this.message = "";
-          this.$emit("clickbt", cardD);
-          this.$message({ type: "success", message: "感谢你的记录！" });
-        });
+            let cardD = {
+              type: this.id, //0为留言墙 1为照片墙
+              message: this.message, // 新建留言卡片的时候输入的内容
+              name: data.name, //新建卡片时的昵称
+              userId: this.user.id, //访问用户的ip
+              moment: new Date(), //新建时刻
+              label: this.labelSelected, //所选择的留言所属标签
+              color: 5, //卡片颜色
+              imgurl: res,
+              id: result.message.insertId,
+              islike: [{ count: 0 }],
+              like: [{ count: 0 }],
+              comcount: [{ count: 0 }],
+              report: [{ count: 0 }],
+              dismiss: [{ count: 0 }],
+            };
+            this.message = "";
+            this.$emit("clickbt", cardD);
+            this.$message({ type: "success", message: "感谢你的记录！" });
+          });
         });
       }
     },

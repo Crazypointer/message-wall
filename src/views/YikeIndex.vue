@@ -31,13 +31,7 @@ export default {
 <template>
   <div class="wall-index">
     <TopBar></TopBar>
-    <video
-      src="../assets/images/qm1.mp4"
-      class="bg-video"
-      loop="loop"
-      muted="muted"
-      autoplay="autoplay"
-    ></video>
+    <video src="../assets/images/qm1.mp4" class="bg-video" loop="loop" muted="muted" autoplay="autoplay"></video>
     <router-view></router-view>
     <FootBar></FootBar>
   </div>

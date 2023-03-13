@@ -10,10 +10,7 @@
     <div class="foot">
       <div class="foot-left">
         <div class="icon" @click="clickLike">
-          <span
-            class="iconfont icon-aixin1"
-            :class="{ islike: card.islike[0].count > 0 }"
-          ></span>
+          <span class="iconfont icon-aixin1" :class="{ islike: card.islike[0].count > 0 }"></span>
           <span class="value">{{ card.like[0].count }}</span>
         </div>
 

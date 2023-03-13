@@ -9,26 +9,16 @@
     <!-- Bug:在照片页面下 card没有值 传不到下面的note去 导致下面的组件无法渲染 -->
     <NoteCard :note="card"></NoteCard>
     <div class="form">
-      <textarea
-        name=""
-        class="message"
-        placeholder="请输入..."
-        v-model="discuss"
-      ></textarea>
+      <textarea name="" class="message" placeholder="请输入..." v-model="discuss"></textarea>
       <div class="bt">
         <input type="text" class="name" placeholder="签名" v-model="name" />
-        <YkButton :class="{ notallowed: !isDis }" @click="submit"
-          >确定</YkButton
-        >
+        <YkButton :class="{ notallowed: !isDis }" @click="submit">确定</YkButton>
       </div>
     </div>
     <p class="title">评论{{ cards.comcount[0].count }}</p>
     <div class="comment">
       <div class="comment-li" v-for="(e, index) in comments" :key="index">
-        <div
-          class="user-head"
-          :style="{ backgroundImage: headColor[e.imgurl] }"
-        ></div>
+        <div class="user-head" :style="{ backgroundImage: headColor[e.imgurl] }"></div>
         <div class="comm-m">
           <div class="m-top">
             <p class="name">{{ e.name }}</p>
@@ -73,7 +63,7 @@ export default {
     },
     //用cards来代替card 因为card不能被直接修改
     cards() {
-      console.log(this.card)
+      console.log(this.card);
       return this.card;
     },
   },

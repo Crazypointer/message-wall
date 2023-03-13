@@ -11,7 +11,7 @@
           <span class="iconfont icon-xiangzuo"></span>
         </div>
         <div class="switch sw-right" @click="changeNumber(1)" v-show="nowNumber < photos.length - 1">
-          <span class="iconfont icon-xiangyou" ></span>
+          <span class="iconfont icon-xiangyou"></span>
         </div>
       </div>
     </div>
