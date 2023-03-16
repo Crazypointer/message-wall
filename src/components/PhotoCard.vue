@@ -11,7 +11,7 @@ const store = useStore();
 console.log(label);
 console.log(cardColor);
 const user = ref(() => {
-  return store.id;
+  return store.state.user;
 });
 
 const props = defineProps({

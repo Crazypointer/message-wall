@@ -3,11 +3,6 @@ import TopBar from "@/components/TopBar.vue";
 import FootBar from "@/components/FootBar.vue";
 import { signIpApi } from "@/api/index";
 export default {
-  data() {
-    return {
-      aa: "",
-    };
-  },
   components: {
     TopBar,
     FootBar,

@@ -47,31 +47,6 @@ props;
 const changeNumber = (e) => {
   emit("update:bool", e);
 };
-
-// export default {
-//   props: {
-//     photos: {
-//       default: [],
-//     },
-//     nowNumber: {
-//       type: Number,
-//       default: 0,
-//     },
-//     isView: {
-//       default: false,
-//     },
-//   },
-//   data() {
-//     return {
-//       baseUrl,
-//     };
-//   },
-//   methods: {
-//     changeNumber(e) {
-//       this.$emit("viewSwitch", e);
-//     },
-//   },
-// };
 </script>
 <style lang="less" scoped>
 .view {

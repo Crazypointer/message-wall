@@ -24,61 +24,48 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { label, cardColor } from "@/utils/data";
 import { dateOne } from "@/utils/yksg";
 import { insertFeedbackApi } from "@/api/index";
-export default {
-  data() {
-    return {
-      label,
-      dateOne,
-      cardColor,
-      user: this.$store.state.user,
-    };
-  },
-  props: {
-    width: {
-      default: "100%",
-    },
-    note: {
-      default: {},
-    },
-  },
+import { useStore } from "vuex";
+import { defineProps, computed, defineEmits, ref } from "vue";
+const store = useStore();
+const user = ref(() => {
+  return store.state.user;
+});
 
-  //监听计算属性
-  computed: {
-    card() {
-      return this.note;
-    },
+const props = defineProps({
+  width: {
+    default: "100%",
   },
-  methods: {
-    toDetail() {
-      this.$emit("toDetail");
-    },
-    //点击喜欢
-    clickLike() {
-      if (this.card.islike[0].count == 0) {
-        let data = {
-          wallId: this.card.id,
-          userId: this.user.id,
-          type: 0,
-          moment: new Date(),
-        };
-        insertFeedbackApi(data).then(() => {
-          //反馈完成
-          this.card.like[0].count++;
-          this.card.islike[0].count++;
-        });
-      }
-    },
+  note: {
+    default: {},
   },
-  created() {
-    // console.log("******NewCard******");
-    // console.log(this.card);
-    // console.log("**********************");
-  },
-};
+});
+const card = computed(() => {
+  return props.note;
+});
+function clickLike() {
+  if (this.card.islike[0].count == 0) {
+    let data = {
+      wallId: this.card.id,
+      userId: user.value.id,
+      type: 0,
+      moment: new Date(),
+    };
+    insertFeedbackApi(data).then(() => {
+      //反馈完成
+      this.card.like[0].count++;
+      this.card.islike[0].count++;
+    });
+  }
+}
+
+const emit = defineEmits(["toDetail"]);
+function toDetail() {
+  emit("toDetail");
+}
 </script>
 <style lang="less" scoped>
 /* @import url(); 引入css类 */

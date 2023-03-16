@@ -65,150 +65,131 @@
   </div>
 </template>
 
-<script>
+<script setup>
+// label: 从data中导入的数据 根据id=0或者1渲染出相应的全部的标签
 import { cardColor, cardColor1, label } from "@/utils/data";
 import YkButton from "./YkButton.vue";
 import { getObjectURL } from "@/utils/yksg";
 import { insertWallApi, uploadImgApi } from "@/api/index";
-export default {
-  props: {
-    //当前在留言墙还是照片墙
-    id: {
-      default: 0,
-    },
+import { defineProps, defineEmits, ref } from "vue";
+import { useStore } from "vuex";
+import { getCurrentInstance } from "vue";
+const store = useStore();
+const props = defineProps({
+  //当前在留言墙还是照片墙
+  id: {
+    default: 0,
   },
-  data() {
-    return {
-      cardColor,
-      cardColor1,
-      label, //从data中导入的数据 根据id=0或者1渲染出相应的全部的标签
-      colorSelected: 0,
-      labelSelected: 0, //当前选中的标签类型
-      message: "", //留言信息
-      name: "Tree", //签名
-      user: this.$store.state.user,
-      url: "",
-    };
-  },
-  methods: {
-    changeColor(index) {
-      this.colorSelected = index;
-    },
-    changeLabel(index) {
-      this.labelSelected = index;
-    },
-    //关闭窗口 data传信息
-    closeModal(data) {
-      // console.log(data);
-      this.$emit("addClose", data);
-    },
-    //提交新建的留言
-    submit() {
-      let name = "匿名";
-      if (this.name) {
-        name = this.name;
-      }
-      let data = {
-        type: this.id, //0为留言墙 1为照片墙
-        message: this.message, // 新建留言卡片的时候输入的内容
-        name: name, //新建卡片时的昵称
-        userId: this.user.id, //访问用户的ip
+});
+
+let colorSelected = ref(0);
+let labelSelected = ref(0); //当前选中的标签类型
+let message = ref(""); //留言信息
+let name = ref("Tree"); //签名
+const user = store.state.user;
+let url = ref("");
+
+function changeColor(index) {
+  colorSelected.value = index;
+}
+function changeLabel(index) {
+  labelSelected.value = index;
+}
+const emit = defineEmits(["addClose"]);
+//关闭窗口 data传信息
+function closeModal(data) {
+  // console.log(data);
+  emit("addClose", data);
+}
+const instance = getCurrentInstance();
+//提交新建的留言
+function submit() {
+  let aname = "匿名";
+  if (name.value) {
+    aname = name.value;
+  }
+  let data = {
+    type: props.id, //0为留言墙 1为照片墙
+    message: message.value, // 新建留言卡片的时候输入的内容
+    name: aname, //新建卡片时的昵称
+    userId: user.id, //访问用户的ip
+    moment: new Date(), //新建时刻
+    label: labelSelected.value, //所选择的留言所属标签
+    color: 5, //卡片颜色
+    imgurl: "",
+  };
+  // console.log(data);
+  if (message.value != "" && props.id == 0) {
+    data.color = colorSelected.value;
+    insertWallApi(data).then((res) => {
+      let cardD = {
+        type: props.id, //0为留言墙 1为照片墙
+        message: message.value, // 新建留言卡片的时候输入的内容
+        name: aname, //新建卡片时的昵称
+        userId: user.id, //访问用户的ip
         moment: new Date(), //新建时刻
-        label: this.labelSelected, //所选择的留言所属标签
-        color: 5, //卡片颜色
+        label: labelSelected.value, //所选择的留言所属标签
+        color: colorSelected.value, //卡片颜色
         imgurl: "",
+        id: res.message.insertId,
+        islike: [{ count: 0 }],
+        like: [{ count: 0 }],
+        comcount: [{ count: 0 }],
+        report: [{ count: 0 }],
+        dismiss: [{ count: 0 }],
       };
-      if (this.message != "" && this.id == 0) {
-        data.color = this.colorSelected;
-        insertWallApi(data).then((res) => {
-          let cardD = {
-            type: this.id, //0为留言墙 1为照片墙
-            message: this.message, // 新建留言卡片的时候输入的内容
-            name: name, //新建卡片时的昵称
-            userId: this.user.id, //访问用户的ip
-            moment: new Date(), //新建时刻
-            label: this.labelSelected, //所选择的留言所属标签
-            color: this.colorSelected, //卡片颜色
-            imgurl: "",
-            id: res.message.insertId,
-            islike: [{ count: 0 }],
-            like: [{ count: 0 }],
-            comcount: [{ count: 0 }],
-            report: [{ count: 0 }],
-            dismiss: [{ count: 0 }],
-          };
-          this.message = "";
-          this.$emit("clickbt", cardD);
-          this.$message({ type: "success", message: "感谢你的记录！" });
-        });
-      } else if (this.id == 1 && this.url) {
-        this.uploadPhoto(data);
-      }
-    },
-    //图片显示
-    showPhoto() {
-      let aa = getObjectURL(document.getElementById("file").files[0]);
-      this.url = aa;
-    },
-    // 图片提交后端
-    uploadPhoto(data) {
-      let file = document.getElementById("file");
-      if (file.files.length > 0) {
-        let formData = new FormData();
-        formData.append("file", file.files[0]);
+      console.log("新建留言处的");
+      console.log(cardD);
+      message.value = "";
+      emit("clickbt", cardD);
+      instance.proxy.$message({ type: "success", message: "感谢你的记录！" });
+    });
+  } else if (props.id == 1 && url) {
+    uploadPhoto(data);
+  }
+}
+//图片显示
+function showPhoto() {
+  let aa = getObjectURL(document.getElementById("file").files[0]);
+  url = aa;
+}
+// 图片提交后端
+function uploadPhoto(data) {
+  let file = document.getElementById("file");
+  if (file.files.length > 0) {
+    let formData = new FormData();
+    formData.append("file", file.files[0]);
 
-        //提交后端
-        console.log(formData);
-        uploadImgApi(formData).then((res) => {
-          // 数据存数据库
-          data.imgurl = res;
-          insertWallApi(data).then((result) => {
-            let cardD = {
-              type: this.id, //0为留言墙 1为照片墙
-              message: this.message, // 新建留言卡片的时候输入的内容
-              name: data.name, //新建卡片时的昵称
-              userId: this.user.id, //访问用户的ip
-              moment: new Date(), //新建时刻
-              label: this.labelSelected, //所选择的留言所属标签
-              color: 5, //卡片颜色
-              imgurl: res,
-              id: result.message.insertId,
-              islike: [{ count: 0 }],
-              like: [{ count: 0 }],
-              comcount: [{ count: 0 }],
-              report: [{ count: 0 }],
-              dismiss: [{ count: 0 }],
-            };
-            this.message = "";
-            this.$emit("clickbt", cardD);
-            this.$message({ type: "success", message: "感谢你的记录！" });
-          });
-        });
-      }
-    },
-
-    //接口测试用
-    apiTest() {
-      let data = {
-        type: 0,
-        message: "测试内容",
-        name: "ysm",
-        userId: "32",
-        moment: new Date(),
-        label: 0,
-        color: 3,
-        imgurl: "www.abc.com",
-      };
-      this.axios.post("http://localhost:3000/insertWall", data).then((res) => {
-        console.log(res.data);
+    //提交后端
+    console.log(formData);
+    uploadImgApi(formData).then((res) => {
+      // 数据存数据库
+      data.imgurl = res;
+      insertWallApi(data).then((result) => {
+        let cardD = {
+          type: props.id, //0为留言墙 1为照片墙
+          message: message.value, // 新建留言卡片的时候输入的内容
+          name: data.name, //新建卡片时的昵称
+          userId: user.id, //访问用户的ip
+          moment: new Date(), //新建时刻
+          label: labelSelected.value, //所选择的留言所属标签
+          color: 5, //卡片颜色
+          imgurl: res,
+          id: result.message.insertId,
+          islike: [{ count: 0 }],
+          like: [{ count: 0 }],
+          comcount: [{ count: 0 }],
+          report: [{ count: 0 }],
+          dismiss: [{ count: 0 }],
+        };
+        message = "";
+        emit("clickbt", cardD);
+        instance.proxy.$message({ type: "success", message: "感谢你的记录！" });
       });
-    },
-  },
-
-  //生命周期 - 挂载完成（访问DOM元素）
-  mounted() {},
-  components: { YkButton },
-};
+    });
+  }
+}
+uploadPhoto;
 </script>
 <style lang="less" scoped>
 /* @import url(); 引入css类 */
