@@ -1,17 +1,17 @@
 <template>
   <button :class="[size, normal]" class="yk-button"><slot></slot></button>
 </template>
-<script>
-export default {
-  props: {
-    size: {
-      default: "base",
-    },
-    normal: {
-      default: "primary",
-    },
+<script setup>
+import { defineProps } from "vue";
+const props = defineProps({
+  size: {
+    default: "base",
   },
-};
+  normal: {
+    default: "primary",
+  },
+});
+props;
 </script>
 <style lang="less" scoped>
 .yk-button {

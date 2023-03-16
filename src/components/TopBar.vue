@@ -1,24 +1,33 @@
-<script>
+<script setup>
 import YkButton from "./YkButton.vue";
-export default {
-  components: {
-    YkButton,
-  },
-  computed: {
-    id() {
-      //获取地址栏的id 通过id区分留言墙还是照片墙
-      return this.$route.query.id;
-    },
-  },
-  methods: {
-    //切换墙
-    changeWall(e) {
-      this.$router.push({
-        query: { id: e },
-      });
-    },
-  },
-};
+import { useRouter, useRoute } from "vue-router";
+import { computed } from "vue";
+
+//因为我们在 setup 里面没有访问 this，
+//所以我们不能再直接访问 this.$router 或 this.$route。
+//作为替代，我们使用 useRouter 和 useRoute 函数：
+const router = useRouter();
+const route = useRoute();
+
+const id = computed(() => {
+  //获取地址栏的id 通过id区分留言墙还是照片墙
+  return route.query.id;
+});
+//切换墙
+function changeWall(e) {
+  router.push({
+    query: { id: e },
+  });
+}
+// export default {
+
+//   computed: {
+//     id() {
+
+//       return this.$route.query.id;
+//     },
+//   },
+// };
 </script>
 
 <template>

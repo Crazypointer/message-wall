@@ -6,6 +6,8 @@ const path = require("path");
 function resolve(dir) {
   return path.join(__dirname, dir);
 }
+// 解决resolve没被使用报错
+resolve;
 module.exports = {
   pluginOptions: {
     // 第三方插件配置
@@ -15,4 +17,3 @@ module.exports = {
     },
   },
 };
-

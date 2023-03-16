@@ -40,11 +40,9 @@ const props = defineProps({
   },
 });
 
-props;
 // 定义事件
 const emit = defineEmits(["viewSwitch"]);
-// const baseUrl = ref("");
-
+props;
 // 发送事件
 const changeNumber = (e) => {
   emit("update:bool", e);

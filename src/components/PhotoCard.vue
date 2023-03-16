@@ -1,52 +1,55 @@
-<script>
+<script setup>
 import { label, cardColor } from "@/utils/data";
+import { computed } from "vue";
 import { baseUrl } from "@/utils/env";
 import { insertFeedbackApi } from "@/api/index";
-export default {
-  data() {
-    return {
-      label,
-      cardColor,
-      baseUrl,
-      user: this.$store.state.user,
+import { defineProps, defineEmits, ref } from "vue";
+// import { photo } from "mock";
+import { useStore } from "vuex";
+const store = useStore();
+
+console.log(label);
+console.log(cardColor);
+const user = ref(() => {
+  return store.id;
+});
+
+const props = defineProps({
+  photo: {
+    default: {},
+  },
+});
+
+const emit = defineEmits(["toDetail"]);
+const card = computed(() => {
+  return props.photo;
+});
+
+//点击喜欢
+function clickLike() {
+  if (card.value.islike[0].count == 0) {
+    let data = {
+      wallId: card.value.id,
+      userId: user.value.id,
+      type: 0,
+      moment: new Date(),
     };
-  },
-  props: {
-    photo: {
-      default: {},
-    },
-  },
-  methods: {
-    toDetail() {
-      this.$emit("toDetail");
-    },
-    //点击喜欢
-    clickLike() {
-      if (this.card.islike[0].count == 0) {
-        let data = {
-          wallId: this.card.id,
-          userId: this.user.id,
-          type: 0,
-          moment: new Date(),
-        };
-        insertFeedbackApi(data).then(() => {
-          //反馈完成
-          this.card.like[0].count++;
-          this.card.islike[0].count++;
-        });
-      }
-    },
-  },
-  //监听计算属性
-  computed: {
-    card() {
-      return this.photo;
-    },
-  },
-  created() {
-    // console.log(this.card)
-  },
-};
+    insertFeedbackApi(data).then(() => {
+      //反馈完成
+      card.value.like[0].count++;
+      card.value.islike[0].count++;
+    });
+  }
+}
+function toDetail() {
+  emit("toDetail");
+}
+
+// data() {
+//   return {
+//     user: this.$store.state.user,
+//   };
+// },
 </script>
 <template>
   <div class="yk-photo-card">
@@ -54,7 +57,7 @@ export default {
     <div class="photo-bg" @click="toDetail"></div>
     <div class="photo-like" @click="clickLike">
       <span class="iconfont icon-aixin1" :class="{ islike: card.islike[0].count > 0 }"></span>
-      <span class="like-data">{{ photo.like[0].count }}</span>
+      <span class="like-data">{{ props.photo.like[0].count }}</span>
     </div>
   </div>
 </template>
