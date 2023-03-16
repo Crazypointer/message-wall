@@ -18,33 +18,62 @@
   </transition>
 </template>
 
-<script>
+<script setup>
 import { baseUrl } from "@/utils/env";
-export default {
-  props: {
-    photos: {
-      default: [],
-    },
-    nowNumber: {
-      type: Number,
-      default: 0,
-    },
-    isView: {
-      default: false,
+import { defineProps, defineEmits } from "vue";
+const props = defineProps({
+  photos: {
+    type: Array,
+    required: true,
+    default: () => {
+      return [];
     },
   },
-  data() {
-    return {
-      baseUrl,
-    };
+  nowNumber: {
+    type: Number,
+    required: true,
   },
-  methods: {
-    changeNumber(e) {
-      this.$emit("viewSwitch", e);
-    },
+  isView: {
+    type: Boolean,
+    required: true,
+    default: false,
   },
-  created() {},
+});
+
+props;
+// 定义事件
+const emit = defineEmits(["viewSwitch"]);
+// const baseUrl = ref("");
+
+// 发送事件
+const changeNumber = (e) => {
+  emit("update:bool", e);
 };
+
+// export default {
+//   props: {
+//     photos: {
+//       default: [],
+//     },
+//     nowNumber: {
+//       type: Number,
+//       default: 0,
+//     },
+//     isView: {
+//       default: false,
+//     },
+//   },
+//   data() {
+//     return {
+//       baseUrl,
+//     };
+//   },
+//   methods: {
+//     changeNumber(e) {
+//       this.$emit("viewSwitch", e);
+//     },
+//   },
+// };
 </script>
 <style lang="less" scoped>
 .view {
