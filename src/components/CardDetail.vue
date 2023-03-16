@@ -32,105 +32,103 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import NoteCard from "./NoteCard.vue";
 import YkButton from "./YkButton.vue";
-
 import { headColor } from "@/utils/data";
 import { dateOne } from "@/utils/yksg";
 import { insertCommentApi, findCommentPageApi } from "@/api";
-export default {
-  data() {
-    return {
-      comments: [],
-      headColor,
-      dateOne,
-      discuss: "", //输入的内容
-      name: "匿名", //评论者名称
-      user: this.$store.state.user,
-      nowpage: 1, //当前页
-      pagesize: 2, //一页几条
-    };
-  },
-  props: {
-    card: {
-      default: {},
-    },
-  },
-  computed: {
-    isDis() {
-      return !!(this.discuss && this.name);
-    },
-    //用cards来代替card 因为card不能被直接修改
-    cards() {
-      console.log(this.card);
-      return this.card;
-    },
-  },
-  components: {
-    NoteCard,
-    YkButton,
-  },
-  watch: {
-    card() {
-      //卡片发生变化
-      this.nowpage = 1;
-      this.comments = [];
-      this.getComment();
-    },
-  },
-  methods: {
-    submit() {
-      if (this.isDis) {
-        if (this.name == "") {
-          this.name = "匿名";
-        }
-        //如果有头像就用用户头像，没有就用随机头像 3个颜色里面随机一个
-        let img = Math.floor(Math.random() * 3);
+import { defineProps, ref, watch, computed } from "vue";
 
-        let data = {
-          wallId: this.cards.id,
-          userId: this.user.id,
-          imgurl: img,
-          moment: new Date(),
-          name: this.name,
-          comment: this.discuss,
-        };
-        insertCommentApi(data).then(() => {
-          this.comments.unshift(data);
-          this.cards.comcount[0].count++;
-          // 清空评论框
-          this.discuss = "";
-          // 清空签名框
-          this.name = "";
-        });
-        console.log(data);
-      }
-    },
-    //获取评论
-    getComment() {
-      if (this.nowpage > 0) {
-        let data = {
-          id: this.card.id,
-          page: this.nowpage,
-          pagesize: this.pagesize,
-        };
-        findCommentPageApi(data).then((res) => {
-          this.comments = this.comments.concat(res.message);
-          // console.log(this.comments);
-          if (res.message.length === this.pagesize) {
-            this.nowpage++;
-          } else {
-            this.nowpage = 0;
-          }
-        });
-      }
-    },
+import { useStore } from "vuex";
+const store = useStore();
+
+const user = ref(store.state.user);
+
+const props = defineProps({
+  card: {
+    default: {},
   },
-  mounted() {
-    // this.getComment();
-  },
+});
+dateOne;
+//评论
+let comments = ref([]);
+//输入的内容
+const discuss = ref("");
+//评论者名称
+const name = ref("匿名");
+
+const nowpage = ref(1); //当前页
+const pagesize = ref(3); //一页几条
+const isDis = () => {
+  //禁止评论的按钮
+  return !!(discuss.value && name.value);
 };
+//用cards来代替card 因为card不能被直接修改
+const cards = computed(() => {
+  return props.card;
+});
+watch(props.card, () => {
+  //卡片发生变化
+  nowpage.value = 1;
+  comments.value = [];
+  getComment();
+});
+
+// watch: {
+//   card() {
+//     nowpage = 1;
+//     comments = [];
+//   getComment();
+//   },
+// }
+
+function submit() {
+  if (isDis) {
+    if (name.value == "") {
+      name.value = "匿名";
+    }
+    //如果有头像就用用户头像，没有就用随机头像 3个颜色里面随机一个
+    let img = Math.floor(Math.random() * 3);
+    let data = {
+      wallId: cards.value.id,
+      userId: user.value.id,
+      imgurl: img,
+      moment: new Date(),
+      name: name.value,
+      comment: discuss.value,
+    };
+    console.log("aad");
+    console.log(comments.value);
+    insertCommentApi(data).then(() => {
+      comments.value.unshift(data);
+      cards.value.comcount[0].count++;
+      // 清空评论框
+      discuss.value = "";
+      // 清空签名框
+      name.value = "";
+    });
+  }
+}
+//获取评论
+function getComment() {
+  if (nowpage.value > 0) {
+    let data = {
+      id: props.card.id,
+      page: nowpage.value,
+      pagesize: pagesize.value,
+    };
+    findCommentPageApi(data).then((res) => {
+      comments.value = comments.value.concat(res.message);
+      // console.log(this.comments);
+      if (res.message.length === pagesize.value) {
+        nowpage.value++;
+      } else {
+        nowpage.value = 0;
+      }
+    });
+  }
+}
 </script>
 <style lang="less" scoped>
 .card-detail {

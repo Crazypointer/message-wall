@@ -4,12 +4,11 @@ import { computed } from "vue";
 import { baseUrl } from "@/utils/env";
 import { insertFeedbackApi } from "@/api/index";
 import { defineProps, defineEmits, ref } from "vue";
-// import { photo } from "mock";
 import { useStore } from "vuex";
 const store = useStore();
 
-console.log(label);
-console.log(cardColor);
+label;
+cardColor;
 const user = ref(() => {
   return store.state.user;
 });
@@ -44,12 +43,6 @@ function clickLike() {
 function toDetail() {
   emit("toDetail");
 }
-
-// data() {
-//   return {
-//     user: this.$store.state.user,
-//   };
-// },
 </script>
 <template>
   <div class="yk-photo-card">
