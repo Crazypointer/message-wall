@@ -118,7 +118,6 @@ function submit() {
     color: 5, //卡片颜色
     imgurl: "",
   };
-  // console.log(data);
   if (message.value != "" && props.id == 0) {
     data.color = colorSelected.value;
     insertWallApi(data).then((res) => {

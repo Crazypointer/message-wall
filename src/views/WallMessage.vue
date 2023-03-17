@@ -67,7 +67,10 @@
     </YkModal>
   </div>
 </template>
-<script>
+<script setup>
+// label: 从data.js中导入的label类型数组 需要传到newCard中去
+// wallType: 0位为留言墙 1为照片墙
+// js中导入的none数组 从data.js中导入的none数组 用于当页面没有留言/照片的时候显示
 import { wallType, label, none } from "@/utils/data";
 
 import lottie from "lottie-web";
@@ -79,214 +82,200 @@ import CardDetail from "@/components/CardDetail.vue";
 import PhotoCard from "@/components/PhotoCard.vue";
 import YkViewer from "@/components/YkViewer.vue";
 import { findWallPageApi } from "@/api";
+import { onMounted, onUnmounted, watch, ref, computed, nextTick } from "vue";
+import { useRoute } from "vue-router";
+import { useStore } from "vuex";
+const route = useRoute();
+const store = useStore();
+const nlabel = ref(-1); //当前选中的标签
+const cards = ref([]); //卡片信息 数组 从数据库里查到的
+const photoArr = ref([]); //存图片链接的数组
+let nWidth = ref(0); //卡片宽度
+let addBottom = ref(30); //add按钮离底部的高度
+const title = ref("写留言"); //当前卡片是写留言 还是联系撕掉
+const modal = ref(false); //是否调用弹窗
+const cardSelected = ref(-1); //当前选中的卡片 -1
+const view = ref(false); //预览大图
+const isLoading = ref(-1); //是否在加载中 -1为加载中、0为没有拿到数据
+const page = ref(1);
+const pagesize = ref(5);
 
-export default {
-  components: {
-    NoteCard,
-    YkModal,
-    NewCard,
-    CardDetail,
-    PhotoCard,
-    YkViewer,
-  },
-  data() {
-    return {
-      wallType, //0位为留言墙 1为照片墙
-      label, //从data.js中导入的label类型数组 需要传到newCard中去
-      none, //从data.js中导入的none数组 用于当页面没有留言/照片的时候显示
-      nlabel: -1, //当前选中的标签
-      cards: [], //卡片信息 数组 从数据库里查到的
-      photoArr: [], //存图片链接的数组
-      nWidth: 0, //卡片宽度
-      addBottom: 30, //add按钮离底部的高度
-      title: "写留言", //当前卡片是写留言 还是联系撕掉
-      modal: false, //是否调用弹窗
-      cardSelected: -1, //当前选中的卡片 -1
-      view: false, //预览大图
-      isLoading: -1, //是否在加载中 -1为加载中、0为没有拿到数据
-      page: 1,
-      pagesize: 5,
+const id = computed(() => {
+  //留言墙和照片墙的切换id
+  //获取地址栏的id 通过id区分留言墙还是照片墙
+  return route.query.id;
+});
+console.log("id");
+console.log(id.value);
+const user = computed(() => {
+  return store.state.user;
+});
+watch(id, () => {
+  // newName, oldName 两个值
+  //路由跳转，全部设置为默认值
+  modal.value = false; //关闭详情弹窗
+  view.value = false; //关闭图片预览
+  nlabel.value = -1; //选择的标签变为默认的-1
+  cardSelected.value = -1; //标签变为未选中的状态
+  getUser();
+  getWallCard(id.value);
+});
+
+//选中标签
+function selectNode(e) {
+  nlabel.value = e;
+  cards.value = [];
+  page.value = 1;
+  getWallCard(id);
+}
+//获取卡片node的宽度
+function noteWidth() {
+  let wWidth = document.body.clientWidth;
+  nWidth.value = Math.floor((wWidth - 120) / 300) * 300;
+}
+
+function scrollBottom() {
+  let scrollTop = document.documentElement.scrollTop || document.body.scrollTo;
+  let clientHeight = document.documentElement.clientHeight;
+  let scrollHeight = document.documentElement.scrollHeight;
+  if (scrollTop + clientHeight + 230 >= scrollHeight) {
+    addBottom.value = scrollTop + clientHeight + 230 - scrollHeight;
+  } else {
+    addBottom.value = 30;
+  }
+  //加载更多
+  if (scrollTop + clientHeight === scrollHeight) {
+    getWallCard(id);
+  }
+}
+
+//切换弹窗打开或关闭
+function closeModal() {
+  //关闭后，卡片选择状态变为-1 未选中卡片
+  cardSelected.value = -1;
+  //关闭弹窗
+  modal.value = false;
+  //如果是照片墙
+  if (id.value == 1) {
+    view.value = false;
+  }
+}
+//新建card
+function addCard() {
+  title.value = "写留言";
+  modal.value = true;
+}
+//选择卡片
+function selectCard(index) {
+  title.value = "";
+  if (cardSelected.value != index) {
+    cardSelected.value = index;
+    modal.value = true;
+    if (id.value == 1) {
+      view.value = true;
+    }
+  } else {
+    cardSelected.value = -1;
+    modal.value = false;
+    if (id.value == 1) {
+      view.value = false;
+    }
+  }
+}
+//切换图片
+function viewSwitch(e) {
+  console.log("点击了切换图片");
+  //0 向左， 1向右
+  if (e == 0) {
+    cardSelected.value--;
+  } else {
+    cardSelected.value++;
+  }
+}
+//前端插入卡片
+function newCard(e) {
+  console.log("插入新的卡片");
+  cards.value.unshift(e);
+  closeModal();
+}
+//加载动画
+function loadinga() {
+  // lottie
+  if (isLoading.value === -1) {
+    nextTick(async () => {
+      var params1 = {
+        container: document.getElementById("lottile"),
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+        animationData: loading,
+      };
+      lottie.loadAnimation(params1);
+    });
+  }
+}
+//获取卡片  传入的id是指留言墙还在照片墙对应的id
+function getWallCard(id) {
+  if (page.value > 0) {
+    isLoading.value = -1;
+    let data = {
+      type: id.value,
+      page: page.value,
+      pagesize: pagesize.value,
+      userId: user.value.id, //用来匹配是否点赞
+      label: nlabel.value, //表示当前选中的标签
     };
-  },
-  computed: {
-    //留言墙和照片墙的切换id
-    id() {
-      //获取地址栏的id 通过id区分留言墙还是照片墙
-      return this.$route.query.id;
-    },
-    user() {
-      return this.$store.state.user;
-    },
-  },
-  watch: {
-    // newName, oldName 两个值
-    id() {
-      //路由跳转，全部设置为默认值
-      this.modal = false; //关闭详情弹窗
-      this.view = false; //关闭图片预览
-      this.nlabel = -1; //选择的标签变为默认的-1
-      this.cardSelected = -1; //标签变为未选中的状态
-      this.getUser();
-      this.getWallCard(this.id);
-    },
-  },
-  methods: {
-    //选中标签
-    selectNode(e) {
-      this.nlabel = e;
-      this.cards = [];
-      this.page = 1;
-      this.getWallCard(this.id);
-    },
-    //获取卡片node的宽度
-    noteWidth() {
-      let wWidth = document.body.clientWidth;
-      this.nWidth = Math.floor((wWidth - 120) / 300) * 300;
-    },
-    scrollBottom() {
-      let scrollTop = document.documentElement.scrollTop || document.body.scrollTo;
-      let clientHeight = document.documentElement.clientHeight;
-      let scrollHeight = document.documentElement.scrollHeight;
-      if (scrollTop + clientHeight + 230 >= scrollHeight) {
-        this.addBottom = scrollTop + clientHeight + 230 - scrollHeight;
-      } else {
-        this.addBottom = 30;
-      }
-      //加载更多
-      if (scrollTop + clientHeight === scrollHeight) {
-        this.getWallCard(this.id);
-      }
-    },
+    console.log(data);
 
-    //切换弹窗打开或关闭
-    closeModal() {
-      //关闭后，卡片选择状态变为-1 未选中卡片
-      this.cardSelected = -1;
-      //关闭弹窗
-      this.modal = false;
-      //如果是照片墙
-      if (this.id == 1) {
-        this.view = false;
+    findWallPageApi(data).then((res) => {
+      cards.value = cards.value.concat(res.message);
+      if (res.message.length) {
+        page.value++;
+      } else {
+        page.value = 0;
+        isLoading.value = 2;
       }
-    },
-    //新建card
-    addCard() {
-      this.title = "写留言";
-      this.modal = true;
-    },
-    //选择卡片
-    selectCard(index) {
-      this.title = "";
-      if (this.cardSelected != index) {
-        this.cardSelected = index;
-        this.modal = true;
-        if (this.id == 1) {
-          this.view = true;
+      //cards.length 代表有数据 则加载动画就关闭 isLoading==1 加载， == 2显示没有更多， ==0停止动画
+      if (cards.value.length > 0) {
+        isLoading.value = 1;
+        if (page.value === 0) {
+          isLoading.value = 2;
         }
       } else {
-        this.cardSelected = -1;
-        this.modal = false;
-        if (this.id == 1) {
-          this.view = false;
+        isLoading.value = 0;
+      }
+      // 如果为图片 就单独拿出来
+      if (id === 1) {
+        for (let i = 0; i < cards.value.length; i++) {
+          photoArr.value.push(cards.value[i].imgurl);
         }
       }
-    },
-    //切换图片
-    viewSwitch(e) {
-      console.log("点击了切换图片");
-      //0 向左， 1向右
-      if (e == 0) {
-        this.cardSelected--;
-      } else {
-        this.cardSelected++;
-      }
-    },
-    //前端插入卡片
-    newCard(e) {
-      console.log("插入新的卡片");
-      this.cards.unshift(e);
-      this.closeModal();
-    },
-    //加载动画
-    loading() {
-      // lottie
-      if (this.isLoading === -1) {
-        this.$nextTick(async () => {
-          var params1 = {
-            container: document.getElementById("lottile"),
-            renderer: "svg",
-            loop: true,
-            autoplay: true,
-            animationData: loading,
-          };
-          lottie.loadAnimation(params1);
-        });
-      }
-    },
-    //获取卡片  传入的id是指留言墙还在照片墙对应的id
-    getWallCard(id) {
-      if (this.page > 0) {
-        this.isLoading = -1;
-        let data = {
-          type: id,
-          page: this.page,
-          pagesize: this.pagesize,
-          userId: this.user.id, //用来匹配是否点赞
-          label: this.nlabel, //表示当前选中的标签
-        };
+    });
+  }
+}
+function getUser() {
+  let timer = setInterval(() => {
+    if (user.value) {
+      getWallCard(id);
+      clearInterval(timer);
+    }
+  }, 10);
+}
+onMounted(() => {
+  noteWidth();
+  loadinga();
+  getUser();
+  // getWallCard(id);
 
-        findWallPageApi(data).then((res) => {
-          this.cards = this.cards.concat(res.message);
-          if (res.message.length) {
-            this.page++;
-          } else {
-            this.page = 0;
-            this.isLoading = 2;
-          }
-          //this.cards.length 代表有数据 则加载动画就关闭 isLoading==1 加载， == 2显示没有更多， ==0停止动画
-          if (this.cards.length > 0) {
-            this.isLoading = 1;
-            if (this.page === 0) {
-              this.isLoading = 2;
-            }
-          } else {
-            this.isLoading = 0;
-          }
-          // 如果为图片 就单独拿出来
-          if (this.id === 1) {
-            for (let i = 0; i < this.cards.length; i++) {
-              this.photoArr.push(this.cards[i].imgurl);
-            }
-          }
-        });
-      }
-    },
-    getUser() {
-      let timer = setInterval(() => {
-        if (this.user) {
-          this.getWallCard(this.id);
-          clearInterval(timer);
-        }
-      }, 10);
-    },
-  },
-  created() {},
-  mounted() {
-    this.noteWidth();
-    this.loading();
-    this.getUser();
-    // this.getWallCard(this.id);
-
-    //监听屏幕变化
-    window.addEventListener("resize", this.noteWidth);
-    window.addEventListener("scroll", this.scrollBottom);
-  },
-  unmounted() {
-    //监听屏幕变化
-    window.addEventListener("resize", this.noteWidth);
-    window.addEventListener("scroll", this.scrollBottom);
-  },
-};
+  //监听屏幕变化
+  window.addEventListener("resize", noteWidth);
+  window.addEventListener("scroll", scrollBottom);
+});
+onUnmounted(() => {
+  //监听屏幕变化
+  window.addEventListener("resize", noteWidth);
+  window.addEventListener("scroll", scrollBottom);
+});
 </script>
 <style lang="less" scoped>
 .wall-message {
