@@ -105,8 +105,6 @@ const id = computed(() => {
   //获取地址栏的id 通过id区分留言墙还是照片墙
   return route.query.id;
 });
-console.log("id");
-console.log(id.value);
 const user = computed(() => {
   return store.state.user;
 });
@@ -117,8 +115,6 @@ watch(id, () => {
   view.value = false; //关闭图片预览
   nlabel.value = -1; //选择的标签变为默认的-1
   cardSelected.value = -1; //标签变为未选中的状态
-  getUser();
-  getWallCard(id.value);
 });
 
 //选中标签
@@ -184,7 +180,6 @@ function selectCard(index) {
 }
 //切换图片
 function viewSwitch(e) {
-  console.log("点击了切换图片");
   //0 向左， 1向右
   if (e == 0) {
     cardSelected.value--;
@@ -194,7 +189,6 @@ function viewSwitch(e) {
 }
 //前端插入卡片
 function newCard(e) {
-  console.log("插入新的卡片");
   cards.value.unshift(e);
   closeModal();
 }
@@ -214,8 +208,9 @@ function loadinga() {
     });
   }
 }
+
 //获取卡片  传入的id是指留言墙还在照片墙对应的id
-function getWallCard(id) {
+function getWallCard() {
   if (page.value > 0) {
     isLoading.value = -1;
     let data = {
@@ -225,8 +220,8 @@ function getWallCard(id) {
       userId: user.value.id, //用来匹配是否点赞
       label: nlabel.value, //表示当前选中的标签
     };
-    console.log(data);
-
+    // console.log("aaa");
+    // console.log(data);
     findWallPageApi(data).then((res) => {
       cards.value = cards.value.concat(res.message);
       if (res.message.length) {
@@ -238,14 +233,14 @@ function getWallCard(id) {
       //cards.length 代表有数据 则加载动画就关闭 isLoading==1 加载， == 2显示没有更多， ==0停止动画
       if (cards.value.length > 0) {
         isLoading.value = 1;
-        if (page.value === 0) {
+        if (page.value == 0) {
           isLoading.value = 2;
         }
       } else {
         isLoading.value = 0;
       }
       // 如果为图片 就单独拿出来
-      if (id === 1) {
+      if (id.value == 1) {
         for (let i = 0; i < cards.value.length; i++) {
           photoArr.value.push(cards.value[i].imgurl);
         }
@@ -265,7 +260,6 @@ onMounted(() => {
   noteWidth();
   loadinga();
   getUser();
-  // getWallCard(id);
 
   //监听屏幕变化
   window.addEventListener("resize", noteWidth);
