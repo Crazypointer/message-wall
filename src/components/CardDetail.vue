@@ -38,13 +38,11 @@ import YkButton from "./YkButton.vue";
 import { headColor } from "@/utils/data";
 import { dateOne } from "@/utils/yksg";
 import { insertCommentApi, findCommentPageApi } from "@/api";
-import { defineProps, ref, watch, computed } from "vue";
-
+import { defineProps, ref, watch, computed, onMounted } from "vue";
 import { useStore } from "vuex";
+
 const store = useStore();
-
 const user = ref(store.state.user);
-
 const props = defineProps({
   card: {
     default: {},
@@ -62,7 +60,9 @@ const nowpage = ref(1); //当前页
 const pagesize = ref(3); //一页几条
 const isDis = () => {
   //禁止评论的按钮
-  return !!(discuss.value && name.value);
+  if (discuss.value && name.value) {
+    return true;
+  } else return false;
 };
 //用cards来代替card 因为card不能被直接修改
 const cards = computed(() => {
@@ -110,7 +110,7 @@ function submit() {
     });
   }
 }
-//获取评论
+//分页获取评论
 function getComment() {
   if (nowpage.value > 0) {
     let data = {
@@ -129,6 +129,9 @@ function getComment() {
     });
   }
 }
+onMounted(() => {
+  getComment();
+});
 </script>
 <style lang="less" scoped>
 .card-detail {
