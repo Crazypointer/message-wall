@@ -24,13 +24,10 @@ const props = defineProps({
     default: false,
   },
 });
-console.log();
 const emit = defineEmits(["close"]);
 function closeModal() {
   emit("close");
 }
-// onMounted(closeModal);
-props;
 </script>
 <style lang="less" scoped>
 /* @import url(); 引入css类 */

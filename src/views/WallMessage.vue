@@ -83,9 +83,10 @@ import YkViewer from "@/components/YkViewer.vue";
 import { findWallPageApi } from "@/api";
 import { onMounted, onUnmounted, watch, ref, computed, nextTick } from "vue";
 import { useRoute } from "vue-router";
-import { useStore } from "vuex";
+import { useinfoStore } from "@/store/infoStore";
+
+const idStore = useinfoStore();
 const route = useRoute();
-const store = useStore();
 const nlabel = ref(-1); //当前选中的标签
 const cards = ref([]); //卡片信息 数组 从数据库里查到的
 const photoArr = ref([]); //存图片链接的数组
@@ -104,9 +105,9 @@ const id = computed(() => {
   //获取地址栏的id 通过id区分留言墙还是照片墙
   return route.query.id;
 });
-const user = computed(() => {
-  return store.state.user;
-});
+// const user = computed(() => {
+//   return store.state.user;
+// });
 watch(id, () => {
   // newName, oldName 两个值
   //路由跳转，全部设置为默认值
@@ -220,9 +221,10 @@ function getWallCard() {
       type: id.value,
       page: page.value,
       pagesize: pagesize.value,
-      userId: user.value.id, //用来匹配是否点赞
+      userId: idStore.user, //用来匹配是否点赞
       label: nlabel.value, //表示当前选中的标签
     };
+    // console.log(data);
     findWallPageApi(data).then((res) => {
       cards.value = cards.value.concat(res.message);
       if (res.message.length) {
@@ -251,7 +253,7 @@ function getWallCard() {
 }
 function getUser() {
   let timer = setInterval(() => {
-    if (user.value) {
+    if (idStore.user) {
       getWallCard();
       clearInterval(timer);
     }

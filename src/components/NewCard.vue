@@ -68,13 +68,12 @@
 <script setup>
 // label: 从data中导入的数据 根据id=0或者1渲染出相应的全部的标签
 import { cardColor, cardColor1, label } from "@/utils/data";
-import YkButton from "./YkButton.vue";
 import { getObjectURL } from "@/utils/yksg";
 import { insertWallApi, uploadImgApi } from "@/api/index";
-import { ref } from "vue";
-import { useStore } from "vuex";
-import { getCurrentInstance } from "vue";
-const store = useStore();
+import YkButton from "./YkButton.vue";
+import { ref, getCurrentInstance } from "vue";
+import { useinfoStore } from "@/store/infoStore";
+const infoStore = useinfoStore();
 const props = defineProps({
   //当前在留言墙还是照片墙
   id: {
@@ -86,7 +85,6 @@ let colorSelected = ref(0);
 let labelSelected = ref(0); //当前选中的标签类型
 let message = ref(""); //留言信息
 let name = ref("Tree"); //签名
-const user = store.state.user;
 let url = ref("");
 
 function changeColor(index) {
@@ -112,7 +110,7 @@ function submit() {
     type: props.id, //0为留言墙 1为照片墙
     message: message.value, // 新建留言卡片的时候输入的内容
     name: aname, //新建卡片时的昵称
-    userId: user.id, //访问用户的ip
+    userId: infoStore.user, //访问用户的ip
     moment: new Date(), //新建时刻
     label: labelSelected.value, //所选择的留言所属标签
     color: 5, //卡片颜色
@@ -125,7 +123,7 @@ function submit() {
         type: props.id, //0为留言墙 1为照片墙
         message: message.value, // 新建留言卡片的时候输入的内容
         name: aname, //新建卡片时的昵称
-        userId: user.id, //访问用户的ip
+        userId: infoStore.user, //访问用户的ip
         moment: new Date(), //新建时刻
         label: labelSelected.value, //所选择的留言所属标签
         color: colorSelected.value, //卡片颜色
@@ -169,7 +167,7 @@ function uploadPhoto(data) {
           type: props.id, //0为留言墙 1为照片墙
           message: message.value, // 新建留言卡片的时候输入的内容
           name: data.name, //新建卡片时的昵称
-          userId: user.id, //访问用户的ip
+          userId: infoStore.user, //访问用户的ip
           moment: new Date(), //新建时刻
           label: labelSelected.value, //所选择的留言所属标签
           color: 5, //卡片颜色

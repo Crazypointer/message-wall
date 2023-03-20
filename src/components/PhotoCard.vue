@@ -3,16 +3,8 @@ import { label, cardColor } from "@/utils/data";
 import { computed } from "vue";
 import { baseUrl } from "@/utils/env";
 import { insertFeedbackApi } from "@/api/index";
-import { ref } from "vue";
-import { useStore } from "vuex";
-const store = useStore();
-
-label;
-cardColor;
-const user = ref(() => {
-  return store.state.user;
-});
-
+import { useinfoStore } from "@/store/infoStore";
+const infoStore = useinfoStore();
 const props = defineProps({
   photo: {
     default: {},
@@ -29,7 +21,7 @@ function clickLike() {
   if (card.value.islike[0].count == 0) {
     let data = {
       wallId: card.value.id,
-      userId: user.value.id,
+      userId: infoStore.user,
       type: 0,
       moment: new Date(),
     };

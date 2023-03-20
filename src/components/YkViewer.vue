@@ -20,7 +20,6 @@
 
 <script setup>
 import { baseUrl } from "@/utils/env";
-// import { defineProps, defineEmits } from "vue";
 const props = defineProps({
   photos: {
     type: Array,
@@ -42,7 +41,6 @@ const props = defineProps({
 
 // 定义事件
 const emit = defineEmits(["viewSwitch"]);
-props;
 // 发送事件
 const changeNumber = (e) => {
   emit("update:bool", e);

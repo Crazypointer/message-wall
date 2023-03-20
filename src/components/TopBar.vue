@@ -2,7 +2,8 @@
 import YkButton from "./YkButton.vue";
 import { useRouter, useRoute } from "vue-router";
 import { computed } from "vue";
-
+import { useinfoStore } from "@/store/infoStore";
+const infoStore = useinfoStore();
 //因为我们在 setup 里面没有访问 this，
 //所以我们不能再直接访问 this.$router 或 this.$route。
 //作为替代，我们使用 useRouter 和 useRoute 函数：
@@ -18,6 +19,7 @@ function changeWall(e) {
   router.push({
     query: { id: e },
   });
+  infoStore.id = e;
 }
 </script>
 

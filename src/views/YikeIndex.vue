@@ -1,19 +1,13 @@
 <script setup>
 import TopBar from "@/components/TopBar.vue";
 import FootBar from "@/components/FootBar.vue";
-import { signIpApi } from "@/api/index";
-import { useStore } from "vuex";
-const store = useStore();
-
-function getUser() {
-  signIpApi().then((res) => {
-    let user = {
-      id: res.ip,
-    };
-    store.commit("getUser", user);
-  });
-}
-getUser();
+import { onMounted } from "vue";
+import { useinfoStore } from "@/store/infoStore";
+const idStore = useinfoStore();
+onMounted(() => {
+  idStore.getIp();
+  idStore.getId();
+});
 </script>
 <template>
   <div class="wall-index">

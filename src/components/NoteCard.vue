@@ -28,12 +28,14 @@
 import { label, cardColor } from "@/utils/data";
 import { dateOne } from "@/utils/yksg";
 import { insertFeedbackApi } from "@/api/index";
-import { useStore } from "vuex";
+// import { useStore } from "vuex";
 import { computed, ref } from "vue";
-const store = useStore();
-const user = ref(() => {
-  return store.state.user;
-});
+import { useinfoStore } from "@/store/infoStore";
+const infoStore = useinfoStore();
+// const store = useStore();
+// const user = ref(() => {
+//   return store.state.user;
+// });
 
 const props = defineProps({
   width: {
@@ -49,8 +51,8 @@ const card = computed(() => {
 function clickLike() {
   if (this.card.islike[0].count == 0) {
     let data = {
-      wallId: this.card.id,
-      userId: user.value.id,
+      wallId: card.value.id,
+      userId: infoStore,
       type: 0,
       moment: new Date(),
     };

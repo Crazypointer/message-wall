@@ -39,16 +39,13 @@ import { headColor } from "@/utils/data";
 import { dateOne } from "@/utils/yksg";
 import { insertCommentApi, findCommentPageApi } from "@/api";
 import { ref, watch, computed, onMounted } from "vue";
-import { useStore } from "vuex";
-
-const store = useStore();
-const user = ref(store.state.user);
+import { useinfoStore } from "@/store/infoStore";
+const infoStore = useinfoStore();
 const props = defineProps({
   card: {
     default: {},
   },
 });
-dateOne;
 //评论
 let comments = ref([]);
 //输入的内容
@@ -92,14 +89,14 @@ function submit() {
     let img = Math.floor(Math.random() * 3);
     let data = {
       wallId: cards.value.id,
-      userId: user.value.id,
+      userId: infoStore.user,
       imgurl: img,
       moment: new Date(),
       name: name.value,
       comment: discuss.value,
     };
-    console.log("aad");
-    console.log(comments.value);
+    // console.log("aad");
+    // console.log(comments.value);
     insertCommentApi(data).then(() => {
       comments.value.unshift(data);
       cards.value.comcount[0].count++;
@@ -112,7 +109,7 @@ function submit() {
 }
 //分页获取评论
 function getComment() {
-  if (nowpage.value > 0) {
+  if (nowpage.value >= 0) {
     let data = {
       id: props.card.id,
       page: nowpage.value,
@@ -120,8 +117,7 @@ function getComment() {
     };
     findCommentPageApi(data).then((res) => {
       comments.value = comments.value.concat(res.message);
-      // console.log(this.comments);
-      if (res.message.length === pagesize.value) {
+      if (res.message.length == pagesize.value) {
         nowpage.value++;
       } else {
         nowpage.value = 0;
