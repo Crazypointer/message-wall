@@ -27,7 +27,7 @@ function changeWall(e) {
   <div class="top-bar">
     <div class="logo">
       <img src="@/assets/images/yksg.svg" alt="" class="logo-img" />
-      <p class="logo-name">One Time</p>
+      <p class="logo-name">一刻时光</p>
     </div>
     <div class="menu">
       <YkButton size="base" :normal="id == 0 ? 'cprimary' : 'csecondary'" class="menu-message" @click="changeWall(0)">留言墙</YkButton>

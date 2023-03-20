@@ -81,12 +81,11 @@ import CardDetail from "@/components/CardDetail.vue";
 import PhotoCard from "@/components/PhotoCard.vue";
 import YkViewer from "@/components/YkViewer.vue";
 import { findWallPageApi } from "@/api";
-import { onMounted, onUnmounted, watch, ref, computed, nextTick } from "vue";
-import { useRoute } from "vue-router";
+import { onMounted, onUnmounted, ref, watch, reactive, nextTick } from "vue";
 import { useinfoStore } from "@/store/infoStore";
+import { storeToRefs } from "pinia";
 
-const idStore = useinfoStore();
-const route = useRoute();
+const infoStore = useinfoStore();
 const nlabel = ref(-1); //当前选中的标签
 const cards = ref([]); //卡片信息 数组 从数据库里查到的
 const photoArr = ref([]); //存图片链接的数组
@@ -97,35 +96,41 @@ const modal = ref(false); //是否调用弹窗
 const cardSelected = ref(-1); //当前选中的卡片 -1
 const view = ref(false); //预览大图
 const isLoading = ref(-1); //是否在加载中 -1为加载中、0为没有拿到数据
-const page = ref(1);
-const pagesize = ref(5);
+// const page = ref(1);
+// const pagesize = ref(5);
+//留言墙和照片墙的切换id
+const { id, user } = storeToRefs(infoStore);
 
-const id = computed(() => {
-  //留言墙和照片墙的切换id
-  //获取地址栏的id 通过id区分留言墙还是照片墙
-  return route.query.id;
+//分页逻辑
+const pagination = reactive({
+  current: 1, // 当前页码
+  pageSize: 10, // 每页显示条数
 });
-// const user = computed(() => {
-//   return store.state.user;
-// });
-watch(id, () => {
-  // newName, oldName 两个值
+watch(
+  () => infoStore.id,
+  () => {
+    clearArr();
+  }
+);
+//清理
+function clearArr() {
   //路由跳转，全部设置为默认值
   modal.value = false; //关闭详情弹窗
   view.value = false; //关闭图片预览
   nlabel.value = -1; //选择的标签变为默认的-1
   cardSelected.value = -1; //标签变为未选中的状态
   cards.value = [];
+  photoArr.value = [];
+  pagination.current = 0;
   getWallCard();
-  console.log(...cards.value);
-});
+}
 
 //选中标签
 function selectNode(e) {
   nlabel.value = e;
   //清空留言
   cards.value = [];
-  page.value = 1;
+  pagination.pageSize = 1;
   getWallCard();
 }
 //获取卡片node的宽度
@@ -215,33 +220,32 @@ function loadinga() {
 
 //获取卡片  传入的id是指留言墙还在照片墙对应的id
 function getWallCard() {
-  if (page.value > 0) {
+  if (pagination.current >= 0) {
     isLoading.value = -1;
     let data = {
       type: id.value,
-      page: page.value,
-      pagesize: pagesize.value,
-      userId: idStore.user, //用来匹配是否点赞
+      page: pagination.current,
+      pagesize: pagination.pageSize,
+      userId: user.value, //用来匹配是否点赞
       label: nlabel.value, //表示当前选中的标签
     };
-    // console.log(data);
     findWallPageApi(data).then((res) => {
       cards.value = cards.value.concat(res.message);
+      // console.log(cards.value);
       if (res.message.length) {
-        page.value++;
+        pagination.current++;
       } else {
-        page.value = 0;
+        pagination.current = 0;
       }
       if (cards.value.length > 0) {
         isLoading.value = 1;
-        if (page.value == 0) {
+        if (pagination.current == 0) {
           isLoading.value = 2;
         }
       } else {
         isLoading.value = 0;
       }
       //cards.length 代表有数据 则加载动画就关闭 isLoading==1 加载， == 2显示没有更多， ==0停止动画
-
       // 如果为图片 就单独拿出来
       if (id.value == 1) {
         for (let i = 0; i < cards.value.length; i++) {
@@ -251,19 +255,9 @@ function getWallCard() {
     });
   }
 }
-function getUser() {
-  let timer = setInterval(() => {
-    if (idStore.user) {
-      getWallCard();
-      clearInterval(timer);
-    }
-  }, 10);
-}
 onMounted(() => {
   noteWidth();
   loadinga();
-  getUser();
-  getWallCard();
   //监听屏幕变化
   window.addEventListener("resize", noteWidth);
   window.addEventListener("scroll", scrollBottom);

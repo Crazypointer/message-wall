@@ -28,14 +28,9 @@
 import { label, cardColor } from "@/utils/data";
 import { dateOne } from "@/utils/yksg";
 import { insertFeedbackApi } from "@/api/index";
-// import { useStore } from "vuex";
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import { useinfoStore } from "@/store/infoStore";
 const infoStore = useinfoStore();
-// const store = useStore();
-// const user = ref(() => {
-//   return store.state.user;
-// });
 
 const props = defineProps({
   width: {
@@ -49,17 +44,17 @@ const card = computed(() => {
   return props.note;
 });
 function clickLike() {
-  if (this.card.islike[0].count == 0) {
+  if (card.value.islike[0].count == 0) {
     let data = {
       wallId: card.value.id,
-      userId: infoStore,
+      userId: infoStore.user,
       type: 0,
       moment: new Date(),
     };
     insertFeedbackApi(data).then(() => {
       //反馈完成
-      this.card.like[0].count++;
-      this.card.islike[0].count++;
+      card.value.like[0].count++;
+      card.value.islike[0].count++;
     });
   }
 }

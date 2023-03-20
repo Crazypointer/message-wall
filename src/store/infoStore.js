@@ -8,7 +8,7 @@ import { useRoute } from "vue-router";
 // 组合式写法
 export const useinfoStore = defineStore("info", () => {
   const route = useRoute();
-  const user = ref("");
+  const user = ref("::2");
   //留言墙和照片墙的切换id
   const id = ref(0);
   function getIp() {

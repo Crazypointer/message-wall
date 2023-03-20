@@ -1,8 +1,8 @@
 <script setup>
+import { useinfoStore } from "@/store/infoStore";
 import TopBar from "@/components/TopBar.vue";
 import FootBar from "@/components/FootBar.vue";
 import { onMounted } from "vue";
-import { useinfoStore } from "@/store/infoStore";
 const idStore = useinfoStore();
 onMounted(() => {
   idStore.getIp();

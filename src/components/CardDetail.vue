@@ -65,20 +65,16 @@ const isDis = () => {
 const cards = computed(() => {
   return props.card;
 });
-watch(props.card, () => {
-  //卡片发生变化
-  nowpage.value = 1;
-  comments.value = [];
-  getComment();
-});
-
-// watch: {
-//   card() {
-//     nowpage = 1;
-//     comments = [];
-//   getComment();
-//   },
-// }
+watch(
+  () => cards,
+  () => {
+    //卡片发生变化
+    nowpage.value = 1;
+    comments.value = [];
+    getComment();
+  },
+  { immediate: true }
+);
 
 function submit() {
   if (isDis) {
@@ -95,8 +91,6 @@ function submit() {
       name: name.value,
       comment: discuss.value,
     };
-    // console.log("aad");
-    // console.log(comments.value);
     insertCommentApi(data).then(() => {
       comments.value.unshift(data);
       cards.value.comcount[0].count++;
@@ -109,12 +103,13 @@ function submit() {
 }
 //分页获取评论
 function getComment() {
-  if (nowpage.value >= 0) {
+  if (nowpage.value > 0) {
     let data = {
       id: props.card.id,
       page: nowpage.value,
       pagesize: pagesize.value,
     };
+    console.log(data);
     findCommentPageApi(data).then((res) => {
       comments.value = comments.value.concat(res.message);
       if (res.message.length == pagesize.value) {

@@ -135,8 +135,8 @@ function submit() {
         report: [{ count: 0 }],
         dismiss: [{ count: 0 }],
       };
-      console.log("新建留言处的");
-      console.log(cardD);
+      // console.log("新建留言处的");
+      // console.log(cardD);
       message.value = "";
       emit("clickbt", cardD);
       instance.proxy.$message({ type: "success", message: "感谢你的记录！" });
