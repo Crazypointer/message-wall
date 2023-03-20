@@ -72,7 +72,6 @@
 // wallType: 0位为留言墙 1为照片墙
 // js中导入的none数组 从data.js中导入的none数组 用于当页面没有留言/照片的时候显示
 import { wallType, label, none } from "@/utils/data";
-
 import lottie from "lottie-web";
 import loading from "@/assets/images/loading.json";
 import NoteCard from "@/components/NoteCard.vue";
@@ -115,14 +114,18 @@ watch(id, () => {
   view.value = false; //关闭图片预览
   nlabel.value = -1; //选择的标签变为默认的-1
   cardSelected.value = -1; //标签变为未选中的状态
+  cards.value = [];
+  getWallCard();
+  console.log(...cards.value);
 });
 
 //选中标签
 function selectNode(e) {
   nlabel.value = e;
+  //清空留言
   cards.value = [];
   page.value = 1;
-  getWallCard(id);
+  getWallCard();
 }
 //获取卡片node的宽度
 function noteWidth() {
@@ -141,7 +144,7 @@ function scrollBottom() {
   }
   //加载更多
   if (scrollTop + clientHeight === scrollHeight) {
-    getWallCard(id);
+    getWallCard();
   }
 }
 
@@ -220,17 +223,13 @@ function getWallCard() {
       userId: user.value.id, //用来匹配是否点赞
       label: nlabel.value, //表示当前选中的标签
     };
-    // console.log("aaa");
-    // console.log(data);
     findWallPageApi(data).then((res) => {
       cards.value = cards.value.concat(res.message);
       if (res.message.length) {
         page.value++;
       } else {
         page.value = 0;
-        isLoading.value = 2;
       }
-      //cards.length 代表有数据 则加载动画就关闭 isLoading==1 加载， == 2显示没有更多， ==0停止动画
       if (cards.value.length > 0) {
         isLoading.value = 1;
         if (page.value == 0) {
@@ -239,6 +238,8 @@ function getWallCard() {
       } else {
         isLoading.value = 0;
       }
+      //cards.length 代表有数据 则加载动画就关闭 isLoading==1 加载， == 2显示没有更多， ==0停止动画
+
       // 如果为图片 就单独拿出来
       if (id.value == 1) {
         for (let i = 0; i < cards.value.length; i++) {
@@ -251,7 +252,7 @@ function getWallCard() {
 function getUser() {
   let timer = setInterval(() => {
     if (user.value) {
-      getWallCard(id);
+      getWallCard();
       clearInterval(timer);
     }
   }, 10);
@@ -260,7 +261,7 @@ onMounted(() => {
   noteWidth();
   loadinga();
   getUser();
-
+  getWallCard();
   //监听屏幕变化
   window.addEventListener("resize", noteWidth);
   window.addEventListener("scroll", scrollBottom);

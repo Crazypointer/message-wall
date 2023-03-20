@@ -29,7 +29,7 @@ import { label, cardColor } from "@/utils/data";
 import { dateOne } from "@/utils/yksg";
 import { insertFeedbackApi } from "@/api/index";
 import { useStore } from "vuex";
-import { defineProps, computed, defineEmits, ref } from "vue";
+import { computed, ref } from "vue";
 const store = useStore();
 const user = ref(() => {
   return store.state.user;

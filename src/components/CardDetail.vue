@@ -38,7 +38,7 @@ import YkButton from "./YkButton.vue";
 import { headColor } from "@/utils/data";
 import { dateOne } from "@/utils/yksg";
 import { insertCommentApi, findCommentPageApi } from "@/api";
-import { defineProps, ref, watch, computed, onMounted } from "vue";
+import { ref, watch, computed, onMounted } from "vue";
 import { useStore } from "vuex";
 
 const store = useStore();

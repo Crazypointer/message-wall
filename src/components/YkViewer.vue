@@ -20,7 +20,7 @@
 
 <script setup>
 import { baseUrl } from "@/utils/env";
-import { defineProps, defineEmits } from "vue";
+// import { defineProps, defineEmits } from "vue";
 const props = defineProps({
   photos: {
     type: Array,

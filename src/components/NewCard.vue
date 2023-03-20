@@ -71,7 +71,7 @@ import { cardColor, cardColor1, label } from "@/utils/data";
 import YkButton from "./YkButton.vue";
 import { getObjectURL } from "@/utils/yksg";
 import { insertWallApi, uploadImgApi } from "@/api/index";
-import { defineProps, defineEmits, ref } from "vue";
+import { ref } from "vue";
 import { useStore } from "vuex";
 import { getCurrentInstance } from "vue";
 const store = useStore();
@@ -150,7 +150,7 @@ function submit() {
 //图片显示
 function showPhoto() {
   let aa = getObjectURL(document.getElementById("file").files[0]);
-  url = aa;
+  url.value = aa;
 }
 // 图片提交后端
 function uploadPhoto(data) {
@@ -181,7 +181,7 @@ function uploadPhoto(data) {
           report: [{ count: 0 }],
           dismiss: [{ count: 0 }],
         };
-        message = "";
+        message.value = "";
         emit("clickbt", cardD);
         instance.proxy.$message({ type: "success", message: "感谢你的记录！" });
       });

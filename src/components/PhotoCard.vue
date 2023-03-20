@@ -3,7 +3,7 @@ import { label, cardColor } from "@/utils/data";
 import { computed } from "vue";
 import { baseUrl } from "@/utils/env";
 import { insertFeedbackApi } from "@/api/index";
-import { defineProps, defineEmits, ref } from "vue";
+import { ref } from "vue";
 import { useStore } from "vuex";
 const store = useStore();
 

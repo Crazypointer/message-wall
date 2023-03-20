@@ -2,7 +2,7 @@
   <button :class="[size, normal]" class="yk-button"><slot></slot></button>
 </template>
 <script setup>
-import { defineProps } from "vue";
+// import { defineProps } from "vue";
 const props = defineProps({
   size: {
     default: "base",

@@ -19,15 +19,6 @@ function changeWall(e) {
     query: { id: e },
   });
 }
-// export default {
-
-//   computed: {
-//     id() {
-
-//       return this.$route.query.id;
-//     },
-//   },
-// };
 </script>
 
 <template>
