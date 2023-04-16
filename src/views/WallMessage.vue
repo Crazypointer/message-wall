@@ -24,7 +24,6 @@
     </div>
     <!-- 照片墙的组件 -->
     <div class="photo" v-show="id == 1">
-      <!-- selectCard -->
       <PhotoCard
         class="photo-card"
         v-for="(img, index) in cards"

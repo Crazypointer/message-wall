@@ -13,7 +13,6 @@
           <span class="iconfont icon-aixin1" :class="{ islike: card.islike[0].count > 0 }"></span>
           <span class="value">{{ card.like[0].count }}</span>
         </div>
-
         <div class="icon" v-show="card.comcount[0].count > 0">
           <span class="iconfont icon-liuyan"></span>
           <span class="value">{{ card.comcount[0].count }}</span>
@@ -25,16 +24,16 @@
 </template>
 
 <script setup>
-import { label, cardColor } from "@/utils/data";
-import { dateOne } from "@/utils/yksg";
-import { insertFeedbackApi } from "@/api/index";
-import { computed } from "vue";
-import { useinfoStore } from "@/store/infoStore";
+import { label, cardColor } from '@/utils/data';
+import { dateOne } from '@/utils/yksg';
+import { insertFeedbackApi } from '@/api/index';
+import { computed } from 'vue';
+import { useinfoStore } from '@/store/infoStore';
 const infoStore = useinfoStore();
 
 const props = defineProps({
   width: {
-    default: "100%",
+    default: '100%',
   },
   note: {
     default: {},
@@ -58,10 +57,10 @@ function clickLike() {
     });
   }
 }
-
-const emit = defineEmits(["toDetail"]);
+//父组件调起该组件
+const emit = defineEmits(['toDetail']);
 function toDetail() {
-  emit("toDetail");
+  emit('toDetail');
 }
 </script>
 <style lang="less" scoped>
