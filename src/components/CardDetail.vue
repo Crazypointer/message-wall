@@ -23,9 +23,11 @@ import CommentsInfo from './CommentsInfo.vue';
 import NoteCard from './NoteCard.vue';
 import YkButton from './YkButton.vue';
 import { ref, computed } from 'vue';
-// import { useinfoStore } from '@/store/infoStore';
-// const infoStore = useinfoStore();
+import { insertCommentApi } from '@/api/index';
+import { useinfoStore } from '@/store/infoStore';
+const infoStore = useinfoStore();
 const props = defineProps(['card']);
+const name = ref('匿名');
 //用cards来代替card 因为card不能被直接修改
 const cards = computed(() => {
   return props.card;
@@ -38,29 +40,30 @@ const isDis = () => {
   } else return false;
 };
 function submit() {
-  // if (isDis) {
-  //   if (name.value == '') {
-  //     name.value = '匿名';
-  //   }
-  //   //如果有头像就用用户头像，没有就用随机头像 3个颜色里面随机一个
-  //   let img = Math.floor(Math.random() * 3);
-  //   let data = {
-  //     wallId: props.cards.value.id,
-  //     userId: infoStore.user,
-  //     imgurl: img,
-  //     moment: new Date(),
-  //     name: name.value,
-  //     comment: discuss.value,
-  //   };
-  //   insertCommentApi(data).then(() => {
-  //     comments.value.unshift(data);
-  //     cards.value.comcount[0].count++;
-  //     // 清空评论框
-  //     discuss.value = '';
-  //     // 清空签名框
-  //     name.value = '匿名';
-  //   });
-  // }
+  if (isDis) {
+    if (name.value == '') {
+      name.value = '匿名';
+    }
+    //如果有头像就用用户头像，没有就用随机头像 3个颜色里面随机一个
+    let img = Math.floor(Math.random() * 3);
+    let data = {
+      wallId: cards.value.id,
+      userId: infoStore.user,
+      imgurl: img,
+      moment: new Date(),
+      name: name.value,
+      comment: discuss.value,
+    };
+    console.log(data);
+    insertCommentApi(data).then(() => {
+      // comments.value.unshift(data);
+      cards.value.comcount[0].count++;
+      // 清空评论框
+      discuss.value = '';
+      // 清空签名框
+      name.value = '';
+    });
+  }
 }
 </script>
 <style lang="less" scoped>
