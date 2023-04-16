@@ -1,10 +1,8 @@
 <template>
   <transition name="view">
-    <!-- v-if="isView" -->
     <div class="yk-viewer" v-if="isView">
       <div class="bg">
         <div class="viewer-photo">
-          <!-- {{ baseUrl + photos[nowNumber].imgurl }} -->
           <img :src="baseUrl + photos[nowNumber].imgurl" />
         </div>
         <div class="switch sw-left" @click="changeNumber(0)" v-show="nowNumber > 0">
@@ -19,7 +17,7 @@
 </template>
 
 <script setup>
-import { baseUrl } from "@/utils/env";
+import { baseUrl } from '@/utils/env';
 const props = defineProps({
   photos: {
     type: Array,
@@ -40,10 +38,10 @@ const props = defineProps({
 });
 
 // 定义事件
-const emit = defineEmits(["viewSwitch"]);
-// 发送事件
-const changeNumber = (e) => {
-  emit("update:bool", e);
+const emit = defineEmits(['viewSwitch']);
+// 发送事件 state: 0是向左 1是向右
+const changeNumber = state => {
+  emit('viewSwitch', state);
 };
 </script>
 <style lang="less" scoped>

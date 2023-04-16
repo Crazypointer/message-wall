@@ -33,13 +33,13 @@
 </template>
 
 <script setup>
-import NoteCard from "./NoteCard.vue";
-import YkButton from "./YkButton.vue";
-import { headColor } from "@/utils/data";
-import { dateOne } from "@/utils/yksg";
-import { insertCommentApi, findCommentPageApi } from "@/api";
-import { ref, watch, computed, onMounted } from "vue";
-import { useinfoStore } from "@/store/infoStore";
+import NoteCard from './NoteCard.vue';
+import YkButton from './YkButton.vue';
+import { headColor } from '@/utils/data';
+import { dateOne } from '@/utils/yksg';
+import { insertCommentApi, findCommentPageApi } from '@/api';
+import { ref, watch, computed, onMounted } from 'vue';
+import { useinfoStore } from '@/store/infoStore';
 const infoStore = useinfoStore();
 const props = defineProps({
   card: {
@@ -49,9 +49,9 @@ const props = defineProps({
 //评论
 let comments = ref([]);
 //输入的内容
-const discuss = ref("");
+const discuss = ref('');
 //评论者名称
-const name = ref("匿名");
+const name = ref('匿名');
 
 const nowpage = ref(1); //当前页
 const pagesize = ref(3); //一页几条
@@ -78,8 +78,8 @@ watch(
 
 function submit() {
   if (isDis) {
-    if (name.value == "") {
-      name.value = "匿名";
+    if (name.value == '') {
+      name.value = '匿名';
     }
     //如果有头像就用用户头像，没有就用随机头像 3个颜色里面随机一个
     let img = Math.floor(Math.random() * 3);
@@ -95,9 +95,9 @@ function submit() {
       comments.value.unshift(data);
       cards.value.comcount[0].count++;
       // 清空评论框
-      discuss.value = "";
+      discuss.value = '';
       // 清空签名框
-      name.value = "";
+      name.value = '';
     });
   }
 }
@@ -109,8 +109,7 @@ function getComment() {
       page: nowpage.value,
       pagesize: pagesize.value,
     };
-    console.log(data);
-    findCommentPageApi(data).then((res) => {
+    findCommentPageApi(data).then(res => {
       comments.value = comments.value.concat(res.message);
       if (res.message.length == pagesize.value) {
         nowpage.value++;

@@ -37,7 +37,6 @@
     <!-- 图片预览 -->
     <!-- bug cardSelected始终为-1 -->
     <YkViewer :isView="view" :photos="cards" :nowNumber="cardSelected" @viewSwitch="viewSwitch"></YkViewer>
-
     <!-- 卡片状态 -->
     <div class="none-msg" v-if="isLoading == 0">
       <img :src="none[id].url" alt="" />
@@ -71,19 +70,19 @@
 // label: 从data.js中导入的label类型数组 需要传到newCard中去
 // wallType: 0位为留言墙 1为照片墙
 // js中导入的none数组 从data.js中导入的none数组 用于当页面没有留言/照片的时候显示
-import { wallType, label, none } from "@/utils/data";
-import lottie from "lottie-web";
-import loading from "@/assets/images/loading.json";
-import NoteCard from "@/components/NoteCard.vue";
-import YkModal from "@/components/YkModal.vue";
-import NewCard from "@/components/NewCard.vue";
-import CardDetail from "@/components/CardDetail.vue";
-import PhotoCard from "@/components/PhotoCard.vue";
-import YkViewer from "@/components/YkViewer.vue";
-import { findWallPageApi } from "@/api";
-import { onMounted, onUnmounted, ref, watch, reactive, nextTick } from "vue";
-import { useinfoStore } from "@/store/infoStore";
-import { storeToRefs } from "pinia";
+import { wallType, label, none } from '@/utils/data';
+import lottie from 'lottie-web';
+import loading from '@/assets/images/loading.json';
+import NoteCard from '@/components/NoteCard.vue';
+import YkModal from '@/components/YkModal.vue';
+import NewCard from '@/components/NewCard.vue';
+import CardDetail from '@/components/CardDetail.vue';
+import PhotoCard from '@/components/PhotoCard.vue';
+import YkViewer from '@/components/YkViewer.vue';
+import { findWallPageApi } from '@/api';
+import { onMounted, onUnmounted, ref, watch, reactive, nextTick } from 'vue';
+import { useinfoStore } from '@/store/infoStore';
+import { storeToRefs } from 'pinia';
 
 const infoStore = useinfoStore();
 const nlabel = ref(-1); //当前选中的标签
@@ -91,19 +90,17 @@ const cards = ref([]); //卡片信息 数组 从数据库里查到的
 const photoArr = ref([]); //存图片链接的数组
 let nWidth = ref(0); //卡片宽度
 let addBottom = ref(30); //add按钮离底部的高度
-const title = ref("写留言"); //当前卡片是写留言 还是联系撕掉
+const title = ref('写留言'); //当前卡片是写留言 还是联系撕掉
 const modal = ref(false); //是否调用弹窗
 const cardSelected = ref(-1); //当前选中的卡片 -1
 const view = ref(false); //预览大图
 const isLoading = ref(-1); //是否在加载中 -1为加载中、0为没有拿到数据
-// const page = ref(1);
-// const pagesize = ref(5);
 //留言墙和照片墙的切换id
 const { id, user } = storeToRefs(infoStore);
 
 //分页逻辑
 const pagination = reactive({
-  current: 1, // 当前页码
+  current: 0, // 当前页码
   pageSize: 10, // 每页显示条数
 });
 watch(
@@ -128,9 +125,8 @@ function clearArr() {
 //选中标签
 function selectNode(e) {
   nlabel.value = e;
-  //清空留言
+  //清空cards数组 再重新请求
   cards.value = [];
-  pagination.pageSize = 1;
   getWallCard();
 }
 //获取卡片node的宽度
@@ -149,7 +145,7 @@ function scrollBottom() {
     addBottom.value = 30;
   }
   //加载更多
-  if (scrollTop + clientHeight === scrollHeight) {
+  if (scrollTop + clientHeight === scrollHeight && isLoading.value != 2) {
     getWallCard();
   }
 }
@@ -167,12 +163,12 @@ function closeModal() {
 }
 //新建card
 function addCard() {
-  title.value = "写留言";
+  title.value = '写留言';
   modal.value = true;
 }
 //选择卡片
 function selectCard(index) {
-  title.value = "";
+  title.value = '';
   if (cardSelected.value != index) {
     cardSelected.value = index;
     modal.value = true;
@@ -207,8 +203,8 @@ function loadinga() {
   if (isLoading.value === -1) {
     nextTick(async () => {
       var params1 = {
-        container: document.getElementById("lottile"),
-        renderer: "svg",
+        container: document.getElementById('lottile'),
+        renderer: 'svg',
         loop: true,
         autoplay: true,
         animationData: loading,
@@ -229,7 +225,7 @@ function getWallCard() {
       userId: user.value, //用来匹配是否点赞
       label: nlabel.value, //表示当前选中的标签
     };
-    findWallPageApi(data).then((res) => {
+    findWallPageApi(data).then(res => {
       cards.value = cards.value.concat(res.message);
       // console.log(cards.value);
       if (res.message.length) {
@@ -259,13 +255,13 @@ onMounted(() => {
   noteWidth();
   loadinga();
   //监听屏幕变化
-  window.addEventListener("resize", noteWidth);
-  window.addEventListener("scroll", scrollBottom);
+  window.addEventListener('resize', noteWidth);
+  window.addEventListener('scroll', scrollBottom);
 });
 onUnmounted(() => {
   //监听屏幕变化
-  window.addEventListener("resize", noteWidth);
-  window.addEventListener("scroll", scrollBottom);
+  window.addEventListener('resize', noteWidth);
+  window.addEventListener('scroll', scrollBottom);
 });
 </script>
 <style lang="less" scoped>
