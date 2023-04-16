@@ -38,7 +38,7 @@ import YkButton from './YkButton.vue';
 import { headColor } from '@/utils/data';
 import { dateOne } from '@/utils/yksg';
 import { insertCommentApi, findCommentPageApi } from '@/api';
-import { ref, watch, computed, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useinfoStore } from '@/store/infoStore';
 const infoStore = useinfoStore();
 const props = defineProps({
@@ -65,17 +65,6 @@ const isDis = () => {
 const cards = computed(() => {
   return props.card;
 });
-watch(
-  () => cards,
-  () => {
-    //卡片发生变化
-    nowpage.value = 1;
-    comments.value = [];
-    getComment();
-  },
-  { immediate: true }
-);
-
 function submit() {
   if (isDis) {
     if (name.value == '') {
@@ -103,21 +92,41 @@ function submit() {
 }
 //分页获取评论
 function getComment() {
-  if (nowpage.value > 0) {
+  if (nowpage.value >= 0) {
     let data = {
       id: props.card.id,
       page: nowpage.value,
       pagesize: pagesize.value,
     };
     findCommentPageApi(data).then(res => {
-      comments.value = comments.value.concat(res.message);
+      console.log(res.message);
+      //去重插入
+      comments.value = deduplication(comments.value, res.message);
+      // comments.value = comments.value.concat(res.message);
       if (res.message.length == pagesize.value) {
         nowpage.value++;
       } else {
         nowpage.value = 0;
       }
+      console.log(comments.value);
     });
   }
+}
+//去重
+function deduplication(res, data) {
+  for (let i = 0; i < data.length; i++) {
+    let isDuplicate = false;
+    for (let j = 0; j < res.length; j++) {
+      if (data[i].id === res[j].id) {
+        isDuplicate = true;
+        break;
+      }
+    }
+    if (!isDuplicate) {
+      res.push(data[i]);
+    }
+  }
+  return res;
 }
 onMounted(() => {
   getComment();
